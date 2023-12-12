@@ -1,0 +1,10 @@
+# mac
+.DS_Store
+
+# vscode
+!/.vscode/*
+
+# output
+/test*
+!/test*.c
+!/test*.s
