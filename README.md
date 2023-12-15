@@ -18,10 +18,10 @@ Docker 環境でのコマンド実行時 `--platform linux/amd64` を付ける�
 
 ```sh
 # コンテナのシェルに入る。
-docker run --rm -it -v $HOME/ws/books/compilerbook/9cc:/9cc --platform linux/amd64 compilerbook
+docker run --rm -it -v $HOME/ws/books/compilerbook/9cc:/9cc -w /9cc --platform linux/amd64 --name compilerbook compilerbook
 
 # コンテナ上でコマンドを実行する（この場合はテストの実行）
-docker run --rm -v $HOME/ws/books/compilerbook/9cc:/9cc -w /9cc --platform linux/amd64 compilerbook make test
+docker run --rm -v $HOME/ws/books/compilerbook/9cc:/9cc -w /9cc --platform linux/amd64 --name compilerbook compilerbook make test
 ```
 
 
