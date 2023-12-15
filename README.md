@@ -111,6 +111,17 @@ Disassembly of section __TEXT,__text:
 ### ステップ1：整数1個をコンパイルする言語の作成
 
 
+### ステップ2: 加減算のできるコンパイラの作成
+
+if や while の開きカッコ（`{`）が改行されるのを抑制したかったので次の設定値を `Google` にした。カッコの設定単体だけを変える方法は分からなかった。
+
+```json
+  // 次のコーディング スタイルが現在サポートされています: `Visual Studio`、`LLVM`、`Google`、`Chromium`、`Mozilla`、`WebKit`、`Microsoft`、`GNU`。`file` を使用して、現在のディレクトリまたは親ディレクトリにある `.clang-format` ファイルからスタイルを読み込むか、`file:<パス>/.clang-format` を使用して特定のパスを参照します。特定のパラメーターを設定するには、`{キー: 値, ...}` を使用します。たとえば、`Visual Studio` のスタイルは次のようになります: `{ BasedOnStyle: LLVM, UseTab: Never, IndentWidth: 4, TabWidth: 4, BreakBeforeBraces: Allman, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 0, AccessModifierOffset: -4, NamespaceIndentation: All, FixNamespaceComments: false }`。
+  "C_Cpp.clang_format_style": "file",
+```
+
+参考： [Visual Studio Codeでの行頭カッコを何とかしたい #C++ - Qiita](https://qiita.com/Hiragi-GKUTH/items/998c0276e4e62e5c1def)
+
 
 ## 5. 分割コンパイルとリンク
 
