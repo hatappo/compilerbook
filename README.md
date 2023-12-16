@@ -12,7 +12,7 @@
 
 # 全体的なノート
 
-Mac および AppleSilicon （M1以降のMAC） での環境構築については [#AppleSilicon](/#AppleSilicon) を参照
+Mac および AppleSilicon （M1以降のMAC） での環境構築については [AppleSilicon](#AppleSilicon) の節を参照
 
 ## よく使うサンプルコマンド
 
