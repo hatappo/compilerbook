@@ -1,4 +1,12 @@
 {
   "C_Cpp.clang_format_style": "Google",
-  "cSpell.words": ["compilerbook", "fprintf", "noprefix", "objdump", "vfprintf"]
+  "cSpell.words": [
+    "compilerbook",
+    "EBNF",
+    "fprintf",
+    "Naur",
+    "noprefix",
+    "objdump",
+    "vfprintf"
+  ]
 }
