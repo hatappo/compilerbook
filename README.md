@@ -425,12 +425,47 @@ https://ja.wikipedia.org/wiki/%E3%83%96%E3%83%BC%E3%83%88%E3%82%B9%E3%83%88%E3%8
 
 ## [Cコンパイラ作成集中講座 (2020) 第2回](https://www.youtube.com/watch?v=vbJ6xz9KkhY)
 
+`gdb`
+セグフォで落ちるなら、gdbも落ちる。そこでバックトレースとか見ると関数呼び出し関係とかは分かる。それくらい単純に使うだけでも役には立つ。
+
+`ミスコンパイル` のデバッグ。
+アセンブリを見てデバッグするのはきつい。
+
+そこで役に立つのが GCC や CLANG のような他のコンパイラ。それらのコンパイラの出力と自分のコンパイラの出力を比べる。 RAX じゃなくて EAX を使っていた、とか。
+
+セルホストしていくと前の世代のコンパイラにある微妙なバグがその次の世代のコンパイラの出力に影響しちゃったりする。そのとき前の世代のコンパイラの出力を見てデバッグしようとしてはいけない。  
+バグを再現できる最小のコードを2分探索で調べる。つまり、自作コンパイラで半分のファイルを、残りをgccでコンパイルしてリンクして動かす。それを繰り返していく。
+
+x86の学習。
+Intel の仕様書は500ページはあるが、その中でコンパイラが使う命令はごく一部。
+
+`RISC`
+コンパイラ向けの少ない命令セットの CPU アーキテクチャ。
+
+`caller saved register`: 呼び出される側(callee)が自由に使って破壊して良いレジスタ。Caller は必要に応じで自分で値を保存しておく必要がある。
+`callee saved register`: Callee が呼び出し前の状態に原状復帰する必要があるレジスタ。
+
+- [x86-64のCalling Convention - 本当は怖いHPC](https://freak-da.hatenablog.com/entry/2021/03/25/172248)
+- [assembly - What are callee and caller saved registers? - Stack Overflow](https://stackoverflow.com/questions/9268586/what-are-callee-and-caller-saved-registers)
+
+C言語の仕様の学習。
+仕様書は有料で販売されている。ただ、最終ドラフトは PDF で公開されている。本質的な内容は販売版と変わらない。  
+ただ、直接読んで使う必要はそんなにない。レジスタやメモリの概念すら汎用的に表現されて抽象的に書かれている。非常に難解。
+
+- [Project status and milestones](https://www.open-std.org/jtc1/sc22/wg14/www/projects)
+- https://www.open-std.org/jtc1/sc22/wg14/www/docs/n2310.pdf
+
+`C言語の未定義動作`
+網羅的に知っておく必要はないし、仕様書からそれを学習するのは難しい。
+ただ、コンパイラを作る上で未定義動作について知っていると最適化の観点で有益なことはある。
+
+`ANSI C` と `pre-ANSI C`
+モダンな C とそれ以前の C を区別する意図でよく ANSI C という言い方を使う。ISO C とはあまり呼ばないがそこを区別しているわけではない。
+
+## [Cコンパイラ作成集中講座 (2020) 第3回](https://www.youtube.com/watch?v=Fp0jPklQ3tE)
 
 
-## Cコンパイラ作成集中講座 (2020) 第3回
-
-
-## Cコンパイラ作成集中講座 (2020) 第3回
+## Cコンパイラ作成集中講座 (2020) 第4回
 
 
 ## Cコンパイラ作成集中講座 (2020) 第5回
