@@ -1,12 +1,15 @@
 {
   "C_Cpp.clang_format_style": "Google",
   "cSpell.words": [
+    "CISC",
     "compilerbook",
     "EBNF",
     "fprintf",
+    "idiv",
     "Naur",
     "noprefix",
     "objdump",
+    "strchr",
     "vfprintf"
   ]
 }
