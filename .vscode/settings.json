@@ -6,9 +6,16 @@
     "EBNF",
     "fprintf",
     "idiv",
+    "memcmp",
+    "movzb",
     "Naur",
     "noprefix",
     "objdump",
+    "sete",
+    "setl",
+    "setle",
+    "setne",
+    "startswith",
     "strchr",
     "vfprintf"
   ]

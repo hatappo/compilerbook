@@ -316,8 +316,6 @@ unary   = ("+" | "-")? primary
 primary = num | "(" expr ")"
 ```
 
-
-
 1)
 ```
     return new_node(ND_SUB, new_node_num(0), primary());
@@ -329,10 +327,38 @@ primary = num | "(" expr ")"
 
 ### ステップ7: 比較演算子
 
+`memcmp` 関数: ２つのメモリ領域を指定文字数分比較する。
+https://programming-place.net/ppp/contents/c/appendix/reference/memcmp.html
 
 
+```ebnf
+expr    = mul ("+" mul | "-" mul)*
+mul     = unary ("*" unary | "/" unary)*
+unary   = ("+" | "-")? primary
+primary = num | "(" expr ")"
+```
+↓
+```ebnf
+expr       = equality
+equality   = relational ("==" relational | "!=" relational)*
+relational = add ("<" add | "<=" add | ">" add | ">=" add)*
+add        = mul ("+" mul | "-" mul)*
+mul        = unary ("*" unary | "/" unary)*
+unary      = ("+" | "-")? primary
+primary    = num | "(" expr ")"
+```
 
+1. expr 式
+2. equality 比較演算（同一性）
+3. relational 比較演算(大小)
+4. add 二項演算（加算と減算）
+5. mul 二項演算（乗算と除算）
+6. unary 単項演算
+7. primary 数値or式
 
+`sete` 命令 （`setne`, `setl`, `setle`）
+
+`movzb` 命令
 
 ## 6. 関数とローカル変数
 
