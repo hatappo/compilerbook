@@ -303,6 +303,28 @@ main 関数内の `tokenize` の呼び出しが引数ありになっているが
 
 ### ステップ6：単項プラスと単項マイナス
 
+```ebnf
+expr    = mul ("+" mul | "-" mul)*
+mul     = primary ("*" primary | "/" primary)*
+primary = num | "(" expr ")"
+```
+↓
+```ebnf
+expr    = mul ("+" mul | "-" mul)*
+mul     = unary ("*" unary | "/" unary)*
+unary   = ("+" | "-")? primary
+primary = num | "(" expr ")"
+```
+
+
+
+1)
+```
+    return new_node(ND_SUB, new_node_num(0), primary());
+```
+
+の `primary()` は `binary()` の誤り。
+じゃないと `assert 10 '- -10'` のテストが通らない。
 
 
 ### ステップ7: 比較演算子
@@ -477,6 +499,7 @@ Intel の仕様書は500ページはあるが、その中でコンパイラが�
 コンパイラ向けの少ない命令セットの CPU アーキテクチャ。
 
 `caller saved register`: 呼び出される側(callee)が自由に使って破壊して良いレジスタ。Caller は必要に応じで自分で値を保存しておく必要がある。
+
 `callee saved register`: Callee が呼び出し前の状態に原状復帰する必要があるレジスタ。
 
 - [x86-64のCalling Convention - 本当は怖いHPC](https://freak-da.hatenablog.com/entry/2021/03/25/172248)
