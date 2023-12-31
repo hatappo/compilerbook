@@ -27,8 +27,9 @@ assert 21 "5+20-4"
 assert 41 " 12 + 34 - 5 "
 
 # トークナイズエラー
-# assert 0 "1+3++" 
+# assert 0 "1+3++"
 # assert 0 "1 + foo + 5"
+assert 0 "こんにちは"
 
 # 乗算と除算
 assert 105 '21 * 5'
