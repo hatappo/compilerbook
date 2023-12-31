@@ -3,9 +3,9 @@ assert() {
   expected="$1"
   input="$2"
 
-  ./9cc "$input" > tmp.s  # compile to assembly
-  cc tmp.s -o tmp         # compile to executable binary
-  ./tmp                   # execute
+  ./chibicc "$input" > tmp.s || exit  # compile to assembly
+  gcc -static tmp.s -o tmp            # compile to executable binary
+  ./tmp                               # execute
   actual="$?"
 
   if [ "$actual" = "$expected" ]; then

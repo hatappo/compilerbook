@@ -1,13 +1,18 @@
 {
   "C_Cpp.clang_format_style": "Google",
   "cSpell.words": [
+    "chibicc",
     "CISC",
     "compilerbook",
     "EBNF",
+    "ELVM",
     "fprintf",
+    "Hamaji",
     "idiv",
+    "KVSP",
     "memcmp",
     "movzb",
+    "nasm",
     "Naur",
     "noprefix",
     "objdump",
@@ -17,6 +22,11 @@
     "setne",
     "startswith",
     "strchr",
+    "Tompson",
     "vfprintf"
-  ]
+  ],
+  "files.associations": {
+    "chibicc.h": "c",
+    "stdbool.h": "c"
+  }
 }

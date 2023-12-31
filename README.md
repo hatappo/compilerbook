@@ -360,15 +360,23 @@ primary    = num | "(" expr ")"
 
 `movzb` 命令
 
+
+## 5. 分割コンパイルとリンク
+
+### ステップ8: ファイル分割とMakefileの変更
+
+- リファレンスコミット
+  - [Split main.c into multiple small files · rui314/chibicc@725badf](https://github.com/rui314/chibicc/commit/725badfb494544b7c7f1d4c4690b9bc033c6d051)
+  - https://github.com/rui314/chibicc/commits/main/?after=90d1f7f199cc55b13c7fdb5839d1409806633fdb+279
+
+ここから chibicc に名前を変えて、GitHub のコードにアラインすることにした。
+
+
 ## 6. 関数とローカル変数
 
 
 
 ## 7. コンピュータにおける整数の表現
-
-
-
-## 5. 分割コンパイルとリンク
 
 
 
@@ -547,20 +555,131 @@ C言語の仕様の学習。
 
 ## [Cコンパイラ作成集中講座 (2020) 第3回](https://www.youtube.com/watch?v=Fp0jPklQ3tE)
 
+`ビットフィールド` を chibicc ではサポートしている。  
+メモリの大きさを通常の Byte 単位ではなく Bit 単位で指定できる機能。Cでは構造体や共用体のメンバに対して指定できる。
 
-## Cコンパイラ作成集中講座 (2020) 第4回
+### 最適化  
+
+フロントエンドで最適化はしないほうが良い。
+明らかに分かる冗長さに大きな害はない。
+
+中間言語 を定義する
+
+- フロントエンド: Cのコードから中間言語を出力するところ。
+- バックエンド: 中間言語からアセンブリを出力するところ。
+
+`mem2reg`: メモリからRegister に昇格する。ループの i 変数とか。
+
+`定数伝播`（値を展開する） と `定数畳み込み`（計算する）  
+`フロー分析`が必要。
+
+`不要式除去 (dead code elimination)`
+
+`スピル`: レジスタに置けない場合にメモリに追い出すこと。
+
+LLVM（LLVM中間言語） ってまさにこういった中間言語。
+
+### SRP 命令
+
+Intel の CPU はアンアラインドなアクセスも普通にできる。多くのプロセッサでそうなってきている。ただ SSE 関係の命令など一部の命令はアラインメントが必要なものがある。
+
+## [Cコンパイラ作成集中講座 (2020) 第4回](https://www.youtube.com/watch?v=MicEimqeNb4)
+
+### アセンブラの `Intel Syntax`
+で困ること。
+
+- `RAX` などレジスタの名前の変数などが使えない （どちらかというと GNU アセンブラ Intel Syntax サポートの問題）
+- Linux のデフォルトではない。デフォルトは `AT&T Syntax`
+- 命令のオペランドの順番が `AT&T Syntax` と逆。
+
+`nasm`: network assembler 
+
+`TCC`: Tiny C Compiler https://ja.wikipedia.org/wiki/Tiny_C_Compiler
+> ファブリス・ベラールによって作成されたx86、x86-64、ARMアーキテクチャ用のC言語のコンパイラである。名前の通りとても小さく、ディスク容量が小さいコンピューターでも動作するように設計されている。Windowsのサポートについてはバージョン0.9.23から追加されている。
+
+### `Common Symbol` 型
+
+初期化式なしのグローバル変数の定義は、重複して複数存在していてもリンクには失敗しない。Valid。
+
+Fortran歴史的な事情と思われる。
+
+`-fno-common` を付けることで、この動作を無効にして Common Symbol を作らないようにすることもできる。普通にCを書くならこのフラグを有効にしたほうがいい。
+
+### `ELVM`
+https://github.com/shinh/elvm [Hamaji-san](https://twitter.com/shinh) 作
+ものすごく簡単な中間言語仕様。
+命令が12個くらいしかない。
+レジスタも6つしかない。
+
+### 意図せずチューリング完全になってしまう問題
+例えば、停止性を保証できなくなる。
+例えば正規表現は、表現できることもそれなりに柔軟でバランスがいい。
+
+## [Cコンパイラ作成集中講座 (2020) 第5回](https://www.youtube.com/watch?v=crAf_jCtXFI)
 
 
-## Cコンパイラ作成集中講座 (2020) 第5回
+## [Cコンパイラ作成集中講座 (2020) 第6回](https://www.youtube.com/watch?v=6G5n0_QAiIw)
+
+### `Tompson hack`
+https://ja.wikipedia.org/wiki/%E3%82%B1%E3%83%B3%E3%83%BB%E3%83%88%E3%83%B3%E3%83%97%E3%82%BD%E3%83%B3
+> チューリング賞。リッチーと共同受賞。「汎用オペレーティングシステム理論の発展への貢献と、特にUNIXオペレーティングシステムの実装に対して」。この時の受賞記念講演で述べたのが "Reflections on Trusting Trust"、後に Thompson hack と呼ばれるようになる、loginプログラムにバックドアを仕組むようなコンパイラを作るようコンパイラのバイナリを仕組み、その痕跡をコンパイラのソースからは消す、という驚異的な技巧の解説で、しかも実際にいくつかのシステムに仕込まれていたとする衝撃的なものであった。この講演だけで独立したコンピュータセキュリティに対する重要な指摘（仮にコンパイラの全ソースをチェックしても、それだけでは安全ではないかもしれない）とされている。
+
+#### `Quine`: 自身のソースコードと完全に同じ文字列を出力するプログラム
+
+C言語の例： https://ja.wikipedia.org/wiki/%E3%82%AF%E3%83%AF%E3%82%A4%E3%83%B3_(%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0)#C%E8%A8%80%E8%AA%9E
+
+```c
+int main() { char *s = "int main() { char *s = %c%s%c; printf(s, 34, s, 34); }"; printf(s, 34, s, 34); }
+```
+
+`34`はダブルクォートの文字コード
+
+[Reflections on Trusting Trust](https://users.ece.cmu.edu/~ganger/712.fall02/papers/p761-thompson.pdf)
+
+当時は Quine という言葉はメジャーではなかった？論文には self reproducible program という表現が使われている。
+
+条件付きで悪意のあるコードを吐く処理を自身をコンパイルしているときにも埋め込む。
+
+バイナリはソースコードから生成されるわけではなく、ソースコードとコンパイラから生成される。
+
+####  「コンパイラのバイナリにしか含まれていない情報」というのが存在する
+コンパイラの文字列におけるメタキャラクタ（`\n`とか）のエスケープ処理に、文字コードは登場しない。コンパイラをコンパイルするコンパイラ自身に既に埋め込まれている情報を使っている状態。自己言及になっている。
+
+#### 信頼の輪
 
 
-## Cコンパイラ作成集中講座 (2020) 第6回
+## [Cコンパイラ作成集中講座 (2020) 第7回](https://www.youtube.com/watch?v=BH4krqtEmx0)
+
+### `VSP`: Virtual Secure Platform
+
+[準同型暗号による バーチャルセキュアプラットフォーム の開発/Development of Virtual Secure Platform - Speaker Deck](https://speakerdeck.com/nindanaoto/development-of-virtual-secure-platform)
+
+プログラム自体を暗号化し、暗号化したまま外部（クラウドとか）で実行し、結果も暗号化した形で受け取る。
+秘密計算のプロジェクト。
+
+`準同型暗号`
+
+準同型暗号で演算が可能。 → ということは CPU エミュレータ（＝回路エミュレータ）を準同型暗号で作れるのではないか。
+
+ただ、準同型暗号はものすごく処理が遅い。どうするか？ → CPUの命令セットやコンパイラの側面を含めて最適化。
+
+`KVSP`: Kyoto Virtual Secure Platform: リファレンス実装。
 
 
-## Cコンパイラ作成集中講座 (2020) 第7回
+`Intel SGX`  
+[Intel SGX入門 - SGX基礎知識編 #IntelSGX - Qiita](https://qiita.com/Cliffford/items/2f155f40a1c3eec288cf)
+
+Intel SGX の Secure Enclave とかとは原理的にまったく異なる。
+
+### LLVM
+
+RISC-V の LLVM バックエンドの実装はすごく良いコード。
+開発のはじめのほうはドキュメントが存在する。
+
+## [Cコンパイラ作成集中講座 (2020) 第8回](https://www.youtube.com/watch?v=LnhJuE0rM_Y)
 
 
-## Cコンパイラ作成集中講座 (2020) 第8回
+
 
 
 ## Cコンパイラ作成集中講座 (2020) 第9回
