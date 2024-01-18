@@ -4,13 +4,17 @@
 - https://github.com/rui314/9cc
   - the successor: https://github.com/rui314/chibicc
 
+TOC
 
-現在、実装ステップは 28 まで書かれており、 29 以降は書かれていない。
-
-
+- [全体的なノート](#全体的なノート)
+- [各章のノート](#各章のノート)
+- [いろんな人のやってみた記録](#いろんな人のやってみた記録)
+- [Cコンパイラ作成集中講座（2020）動画のノート](#Cコンパイラ作成集中講座（2020）動画のノート)
 
 
 # 全体的なノート
+
+現在、実装ステップは 28 まで書かれており、 29 以降は書かれていない。
 
 Mac および AppleSilicon （M1以降のMAC） での環境構築については [AppleSilicon](#AppleSilicon) の節を参照
 
@@ -24,7 +28,9 @@ docker run --rm -it -v $HOME/ws/books/compilerbook/9cc:/9cc -w /9cc --platform l
 docker run --rm     -v $HOME/ws/books/compilerbook/9cc:/9cc -w /9cc --platform linux/amd64 --name compilerbook compilerbook make test
 ```
 
+
 ----------------------------------------
+
 
 # 各章のノート
 
@@ -499,7 +505,39 @@ Ubuntu 22.04.3 LTS \n \l
 ----------------------------------------
 
 
-# YouTube の Cコンパイラ作成集中講座 (2020) のノート
+# いろんな人のやってみた記録
+
+
+## https://twitter.com/hsjoihs/status/1521771665281077249
+
+> 【募集】
+> 「低レイヤを知りたい人のためのCコンパイラ作成入門」https://sigbus.info/compilerbook をやろうとしたけれど、途中で飽きた・挫折した、というご意見をお寄せ下さい。
+
+> STEP9のスタックについて。アドレスの上下が増える方が上なのか、減る方が上なのかが分かる方が良いと思いました。
+
+> - 2019/9にstep8: ファイル分割までやってフェードアウト
+> - 2021/10にstep7: 比較演算子までやってフェードアウト
+> - 2022/2にstep11: return文までRustでやって今もやる気はある
+
+> sizeofまで実装しましたが、配列で詰まってやめました。
+
+> 分割コンパイルの所で分け方の詳細が分からなくて、とりあえず分けてみたらエラー出てそれを5回ほど繰り返して
+
+> どこからかコードが解説と微妙に合わなくなってきて挫折しかかりましたが解説は参考と考えてリファレンス実装に合わせるようにしたらなんとか進めました
+
+> ・Better CとしてC++で書いていて、セルフホストのためにリセットしてCで書き直したかった。
+> ・型の取り扱いが難しかった。（サイズの違う型どうしの計算とか）
+
+> GitHubやっておらず世界に公開するメールアドレスを持っていないので、新たにGitHubアカウントを開設する動機も持てずに挫折した。
+
+
+## [自作Cコンパイラセルフホストへの道 – 303 See Other](https://alignof.github.io/blog/posts/roadmap/)
+
+
+----------------------------------------
+
+
+# Cコンパイラ作成集中講座（2020）動画のノート
 
 
 ## [Cコンパイラ作成集中講座 (2020) 第1回](https://www.youtube.com/watch?v=8s_4_rX07Vo)
@@ -681,17 +719,111 @@ RISC-V の LLVM バックエンドの実装はすごく良いコード。
 
 ## [Cコンパイラ作成集中講座 (2020) 第8回](https://www.youtube.com/watch?v=LnhJuE0rM_Y)
 
+### GOT
+Global Offset Table
+
+### libc
+けっこう読みやすい、勉強になるコードがある。
+[musl libc](https://www.musl-libc.org/) とかおすすめ。
+
+- https://git.musl-libc.org/cgit/musl/tree/src/string
+  - https://git.musl-libc.org/cgit/musl/tree/src/string/strcmp.c
+
+1関数1ファイルで書かれている。
+
+### Segmentation Fault
+
+不正なアドレスにアクセスしたときに、たまたまそこが OS から割り当てされた領域の場合には Segmentation Fault は起きずに単にメモリ破壊が起きて終わる。
+
+### Linker の本
+古いけど良い。というかこれくらいしかない。
+[Linkers & Loaders | Ohmsha](https://www.ohmsha.co.jp/book/9784274064371/)
 
 
+### `caller saved register` / `callee saved register`
+
+ABI (Application Binary Interface) で決められているもの。
+たいていはの ABI は両者の Mix になっている。 x86 もそう。
+
+### RISC-V をターゲットとしたコンパイラ
+
+を書くとしたらどうしたらいい？ → `QEMU` を使う。
+
+QEMU は別の ISA （命令セット）をエミュレートできる。
+QEMU は２つのモードがある。
+
+1つは OS を動かすような、システム全体をエミュレートするモード
+
+もう1つは Linux の環境だけを用意するモードがある。ユーザランドの CPU のみがエミュレートされる。こっちのほうは手軽に使える。
+ファイルシステムアクセスだけは特殊でシステムコールをトラップして書き換えてくれる。
+
+## [Cコンパイラ作成集中講座 (2020) 第9回](https://www.youtube.com/watch?v=WYFQvI2pjvA)
+
+### x86 （CISC アーキテクチャ）
+
+x64 だとみんな許可を取らずに互換チップを作っている。
+x64 に拡張したのは AMD だし、x64-86 を作ったのは Intel だし、そこらへんはいろいろ法廷闘争があった。
+
+Intel CPU も内部的には RISC のような命令に変換して実行することでパフォーマンス向上を図っている。
+
+### RISC アーキテクチャ
+
+ARM の場合は ARM 者にライセンスしてもらわないといけない。
+
+RISC-V の場合はライセンスフリーなのが1番違う。
+
+`ゼロレジスタ`
+
+ソースとして使用すると常に 0 が読み出される。
+ディスティネーションとして使用すると常に破棄される。
+
+レジスタ間での Move において、ゼロレジスタを片方に使った ADD 命令で済ませる、みたいなことができる。
+
+call と jump を同じ命令で済ませることができたり。
+
+命令セットの多い CISC においても コンパイラはだいたい25個の命令で95%の内容を網羅している。CISCの多彩な命令はほとんど使っていない。（で、 RISC が考案された）
+
+### GOT と PLT
+
+Procedure Linkage Table
+
+PLT は GOT と似たような仕組みなんだけど関数用のもの。
+
+普通の PLT は分岐予測が効くので、その場合はそこまで遅くならない。数％程度。
+
+### その他
+
+この回は`気合で（可能です）`という言葉多かった
+
+## [Cコンパイラ作成集中講座 (2020) 第10回](https://www.youtube.com/watch?v=QqzLz8TYaKc)
+
+Stanford 大学のコンパイラのコースの紹介。
+
+### [CS143: Compilers](https://web.stanford.edu/class/cs143/)
+
+すごくコードを書かされるコード。MIPS でやる。
+
+### [CS243 – Program Analysis and Optimizations | Winter 2023](https://suif.stanford.edu/~courses/cs243/)
+
+[Dragon Book](https://www.amazon.co.jp/%E3%82%B3%E3%83%B3%E3%83%91%E3%82%A4%E3%83%A9%E2%80%95%E5%8E%9F%E7%90%86%E3%83%BB%E6%8A%80%E6%B3%95%E3%83%BB%E3%83%84%E3%83%BC%E3%83%AB-Information-Computing-V-%E3%82%A8%E3%82%A4%E3%83%9B/dp/478191229X) の著者が教えてくれる。 
+
+[joeQ Framework](https://suif.stanford.edu/~courses/cs243/joeq/) の使い方が分からなかったり、そこででるエラーや問題の解決もすごく大変だった。
+
+joeQ コンパイラシステムは、Javaプログラミング言語で書かれたコンパイラ解析フレームワーク、コンパイラ、および完全な仮想マシン。
 
 
-## Cコンパイラ作成集中講座 (2020) 第9回
+### Lisp のコンパイラ実装
+
+https://github.com/rui314/minilisp
+
+これは1000行1ファイルで作った。 GC も入っている。
 
 
-## Cコンパイラ作成集中講座 (2020) 第10回
+## [Cコンパイラ作成集中講座 (2020) 第11回](https://www.youtube.com/watch?v=kJ1rftMMaLo)
+
+### C のワイド文字列と Unicode 文字列
 
 
-## Cコンパイラ作成集中講座 (2020) 第11回
 
 
 ## Cコンパイラ作成集中講座 (2020) 第12回
